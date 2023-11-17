@@ -1,0 +1,103 @@
+body {
+    text-align: center;
+    margin: 5%;
+}
+
+button {
+    font-size: 2vw;
+    padding: 1.5vw 3vw;
+    cursor: pointer;
+    background-color: red;
+    border-color: red;
+    border-radius: 2vw;
+    font-weight: 600;
+    color: #fff;
+}
+
+p {
+    font-size: 5vw;
+    margin-top: 5%;
+}
+
+#gerarNomeBtn {
+    width: 70%;
+    margin-top: 5%;
+}
+
+.box {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;  /* Alteração para organizar verticalmente */
+    align-items: center;
+    justify-content: center;
+    width: 70%;
+    height: 40vh;
+    background-color: rgba(52, 50, 50, 0.30);
+    border-radius: 3vw;
+}
+
+form {
+    margin-top: 5%;
+}
+
+label {
+    font-size: 2vw;
+    margin-bottom: 1vw;
+}
+
+input {
+    font-size: 1.5vw;
+    padding: 1vw;
+    width: 100%;
+    margin-bottom: 2vw;
+    border: 1px solid #ccc;
+    border-radius: 1vw;
+}
+
+@media screen and (max-width: 768px) {
+    button {
+        font-size: 4vw;
+        padding: 3vw 6vw;
+        border-radius: 4vw;
+    }
+
+    p {
+        font-size: 8vw;
+        margin-top: 10%;
+    }
+
+    #gerarNomeBtn, .box {
+        width: 90%;
+        margin-top: 10%;
+    }
+
+    label {
+        font-size: 4vw;
+    }
+
+    input {
+        font-size: 3vw;
+        padding: 2vw;
+        margin-bottom: 4vw;
+        border-radius: 2vw;
+    }
+
+    
+}
+
+#userInfoForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    display: block;
+}
+
+#userInfoForm.hidden {
+    display: none;
+}

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sorteio sistema saas</title>
+    <link rel="stylesheet" href="reset.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <style>
+    body {
+      text-align: center;
+      margin: 5%;
+    }
+
+    button {
+      font-size: 2vw;
+      padding: 1.5vw 3vw;
+      cursor: pointer;
+      background-color: red;
+      border-color: red;
+      border-radius: 2vw;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    p {
+      font-size: 5vw;
+      margin-top: 5%;
+    }
+
+    #gerarNomeBtn {
+      width: 70%;
+      margin-top: 5%;
+    }
+
+    .box {
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column; /* Alteração para organizar verticalmente */
+      align-items: center;
+      justify-content: center;
+      width: 70%;
+      height: 40vh;
+      background-color: rgba(52, 50, 50, 0.3);
+      border-radius: 3vw;
+    }
+
+    form {
+      margin-top: 5%;
+    }
+
+    label {
+      font-size: 2vw;
+      margin-bottom: 1vw;
+    }
+
+    input {
+      font-size: 1.5vw;
+      padding: 1vw;
+      width: 100%;
+      margin-bottom: 2vw;
+      border: 1px solid #ccc;
+      border-radius: 1vw;
+    }
+
+    @media screen and (max-width: 768px) {
+      button {
+        font-size: 4vw;
+        padding: 3vw 6vw;
+        border-radius: 4vw;
+      }
+
+      p {
+        font-size: 8vw;
+        margin-top: 10%;
+      }
+
+      #gerarNomeBtn,
+      .box {
+        width: 90%;
+        margin-top: 10%;
+      }
+
+      label {
+        font-size: 4vw;
+      }
+
+      input {
+        font-size: 3vw;
+        padding: 2vw;
+        margin-bottom: 4vw;
+        border-radius: 2vw;
+      }
+    }
+
+    #userInfoForm {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+      display: block;
+    }
+
+    #userInfoForm.hidden {
+      display: none;
+    }
+  </style>
+  <body>
+    <div class="tudo">
+      <div class="box">
+        <p id="nomeAleatorio"></p>
+        <div id="botoes">
+          <button type="button" onclick="escolherCodnome()">
+            Escolher Codnome
+          </button>
+          <button type="button" onclick="gerarOutroCodnome()">
+            Gerar Outro Codnome
+          </button>
+        </div>
+      </div>
+
+      <form id="userInfoForm">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" required />
+
+        <label for="ramal">Ramal:</label>
+        <input type="text" id="ramal" required />
+
+        <button type="button" id="gerarNomeBtn" onclick="gerarNome()">
+          GERAR CODNOME
+        </button>
+      </form>
+    </div>
+    <script>
+      let codnomeEscolhido = "";
+
+      function geraCodnome() {
+        const alfabeto = [
+          "🥕 cenoura",
+          "🥑 abacate",
+          "🥬 repolho",
+          "🍅 tomate",
+          "🥒 pepino",
+          "🫛 ervilha",
+          "🍍 abacaxi",
+          "🍉 melancia",
+          "🍇 uva",
+          "🥝kiwi",
+          "🥭 manga",
+          "🍌 banana",
+          "🍋 limão",
+          "🥥 coco",
+          "🍐 pera",
+          "🍒 cereja",
+          "🍓 morango",
+          "🫐 mirtilo",
+          "🍑 pessego",
+          "🫒 azeitona",
+          "🍆 berinjela",
+          "🌽 milho",
+          "🥔 batata",
+        ];
+        const caractereIndex = Math.floor(Math.random() * alfabeto.length);
+        return alfabeto[caractereIndex];
+      }
+
+      function gerarNome() {
+        const nome = document.getElementById("nome").value;
+        const ramal = document.getElementById("ramal").value;
+        const userInfoForm = document.getElementById("userInfoForm");
+
+        if (nome && ramal) {
+          const nomeAleatorio = geraCodnome();
+          document.getElementById(
+            "nomeAleatorio"
+          ).textContent = `${nome} - ${ramal} - ${nomeAleatorio}`;
+          codnomeEscolhido = `${nome} - ${ramal} - ${nomeAleatorio}`;
+          userInfoForm.classList.add("hidden");
+          document.getElementById("botoes").style.display = "block";
+          salvarNoBancoDeDados(nome, ramal, codnomeEscolhido);
+        } else {
+          alert("Por favor, preencha todos os campos.");
+        }
+      }
+
+      async function escolherCodnome() {
+        const response = await fetch("http://localhost:3000/listarUsuarios");
+        const data = await response.json();
+
+        if (data.length > 0) {
+          const usuarioSelecionado = await exibirOpcoesUsuarios(data);
+
+          if (usuarioSelecionado) {
+            const codnomeEscolhido = usuarioSelecionado.codnome;
+            await salvarEscolhaNoBancoDeDados(codnomeEscolhido);
+          }
+        } else {
+          alert("Nenhum usuário cadastrado.");
+        }
+      }
+
+      async function exibirOpcoesUsuarios(usuarios) {
+        return new Promise((resolve) => {
+          const options = usuarios
+            .map((user, index) => `${index + 1}. ${user.codnome}`)
+            .join("\n");
+          const escolha = prompt(
+            `Escolha o número do usuário desejado:\n${options}`
+          );
+
+          const escolhaIndex = parseInt(escolha) - 1;
+
+          if (!isNaN(escolhaIndex) && usuarios[escolhaIndex]) {
+            resolve(usuarios[escolhaIndex]);
+          } else {
+            alert("Escolha inválida.");
+            resolve(null);
+          }
+        });
+      }
+
+      async function salvarEscolhaNoBancoDeDados(codnomeEscolhido) {
+        const response = await fetch("http://localhost:3000/escolherCodnome", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ codnomeEscolhido }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert(`Você escolheu o codnome: ${data.codnome}`);
+          document.getElementById("botoes").style.display = "block";
+        } else {
+          alert(`Erro ao escolher codnome: ${data.error}`);
+        }
+      }
+
+      async function salvarNoBancoDeDados(nome, ramal, codnomeEscolhido) {
+        const response = await fetch("http://localhost:3000/gerarCodnome", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ nome, ramal, codnomeEscolhido }), // Passa o codnome escolhido
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert(`Codnome gerado: ${data.codnome}`);
+          document.getElementById("botoes").style.display = "block";
+        } else {
+          alert(`Erro ao gerar codnome: ${data.error}`);
+        }
+      }
+
+      function gerarOutroCodnome() {
+        document.getElementById("nomeAleatorio").textContent = "";
+        document.getElementById("nome").value = "";
+        document.getElementById("ramal").value = "";
+        document.getElementById("userInfoForm").classList.remove("hidden");
+        document.getElementById("botoes").style.display = "none";
+      }
+
+      // Adicionado para exibir o formulário inicialmente
+      window.onload = function () {
+        document.getElementById("userInfoForm").classList.remove("hidden");
+      };
+    </script>
+  </body>
+</html>
